@@ -4,11 +4,23 @@
       占位区域
     </div>
     <div class="sticky-wrapper" ref="stickyWrapper">
-      <div class="sticky-bar" ref="bar">bar</div>
-      <div class="content">
-        asd
-        asdasdasd
-        asdasdasdasdasd
+      <div class="parent">
+        <div style="height: 140px; background: purple"></div>
+        <div class="sticky-bar" ref="bar">bar1</div>
+        <div class="content">
+          <p>asd</p>
+          <p>asdasdasd</p>
+          <p>asdasdasdasdasd</p>
+        </div>
+      </div>
+      <div class="parent">
+        <div style="height: 40px; background: purple"></div>
+        <div class="sticky-bar" ref="bar">bar2</div>
+        <div class="content">
+          asd
+          asdasdasd
+          asdasdasdasdasd
+        </div>
       </div>
     </div>
   </div>
@@ -22,10 +34,12 @@ export default {
     }
   },
   mounted () {
-    this.stickybits = stickybits(this.$refs.bar, {
+    this.stickybits = stickybits(document.querySelectorAll('.sticky-bar'), {
         useStickyClasses: true,
         scrollEl: this.$refs.stickyWrapper,
         stickyBitStickyOffset: 0,
+        // noStyles: true,
+        useFixed: true,
       });
   }
 }
@@ -39,21 +53,31 @@ export default {
   background: yellow;
 }
 .sticky-wrapper {
-  overflow: scroll;
+  position: relative;
+
+  overflow-y: scroll;
 
   height: 300px;
 
   background: grey;
+  .parent {
+    position: relative;
+  }
   .sticky-bar {
+    // top: 0;
+    width: 100%;
     height: 50px;
 
     background: blue;
     &.js-is-sticky {
       background: red;
     }
+    &.js-is-stuck {
+      background: pink;
+    }
   }
   .content {
-    height: 1000px;
+    height: 500px;
 
     background: green;
   }

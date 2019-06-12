@@ -1,18 +1,30 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h3>stickybits demo</h3>
+    <div id="nav">
+      <ul>
+        <li>
+          <router-link to="/about">自定义scrollEl</router-link>
+        </li>
+        <li>
+          <router-link to="/multiple">多个实例</router-link>
+        </li>
+        <li>
+          <router-link to="/windowFixed">基于window的fixed</router-link>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+
 
 export default {
   name: 'home',
   components: {
-    HelloWorld
+    
   }
 }
 </script>

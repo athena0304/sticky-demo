@@ -53,6 +53,18 @@
   - .removeInstance = removes an instance
   - .cleanup = removes all Stickybits instances and cleans up dom from stickybits
 */
+
+function insertAfter(newElement, targetElement){
+  var parent = targetElement.parentNode;
+  if (parent.lastChild == targetElement) {
+      // 如果最后的节点是目标元素，则直接添加。因为默认是最后
+      parent.appendChild(newElement);
+  } else {
+      parent.insertBefore(newElement, targetElement.nextSibling);
+      //如果不是，则插入在目标元素的下一个兄弟节点 的前面。也就是目标元素的后面
+  }
+}
+
 class Stickybits {
   constructor(target, obj) {
     const o = typeof obj !== 'undefined' ? obj : {};
@@ -162,6 +174,14 @@ class Stickybits {
       props,
     };
     if (props.positionVal === 'fixed' || props.useStickyClasses) {
+      if(!item.temp) {
+        let temp = document.createElement('div');
+        temp.style.height = `${item.el.offsetHeight}px`;
+        temp.style.display = 'none';
+        item.temp = temp;
+        // it.el.parentNode.insertBefore(temp,it.el);
+        insertAfter(temp,item.el)
+      }
       this.isWin = this.props.scrollEl === window;
       const se = this.isWin ? window : this.getClosestParent(item.el, item.props.scrollEl);
       this.computeScrollOffsets(item);
@@ -200,6 +220,7 @@ class Stickybits {
     - from the top level of the DOM
   */
   getTopPosition(el) {
+    // debugger
     if (this.props.useGetBoundingClientRect) {
       return el.getBoundingClientRect().top + (this.props.scrollEl.pageYOffset || document.documentElement.scrollTop);
     }
@@ -219,24 +240,58 @@ class Stickybits {
       - start
       - stop
   */
+
   computeScrollOffsets(item) {
     const it = item;
     const p = it.props;
     const el = it.el;
     const parent = it.parent;
     const isCustom = !this.isWin && p.positionVal === 'fixed';
+    const isFixed = p.positionVal === 'fixed'
+    const isNotWin = !this.isWin;
     const isTop = p.verticalPosition !== 'bottom';
     const scrollElOffset = isCustom ? this.getTopPosition(p.scrollEl) : 0;
-    const stickyStart = isCustom
-      ? this.getTopPosition(parent) - scrollElOffset
-      : this.getTopPosition(parent);
+    let stickyStart;
+    if(isNotWin) {
+      stickyStart = it.el.offsetTop
+    } else {
+      stickyStart = this.getTopPosition(el)
+    }
+    if(isNotWin) {
+      stickyStart += parent.offsetTop
+    }
+    console.log(it.el.offsetTop, parent.offsetTop, stickyStart)
+    // let stickyStart = isCustom
+    //   ? this.getTopPosition(parent)
+    //   : this.getTopPosition(parent);
+    // if(isNotWin && !isCustom) {
+    //   stickyStart = stickyStart - this.getTopPosition(p.scrollEl) + it.el.offsetTop
+    // }
+    // if(isCustom) {
+    //   stickyStart = stickyStart + it.el.offsetTop
+    // }
+    // if(this.isWin) {
+    //   stickyStart = stickyStart + it.el.offsetTop
+    // }
     const stickyChangeOffset = p.customStickyChangeNumber !== null
       ? p.customStickyChangeNumber
       : el.offsetHeight;
-    const parentBottom = stickyStart + parent.offsetHeight;
-    it.offset = scrollElOffset + p.stickyBitStickyOffset;
+    let parentBottom = stickyStart + parent.scrollHeight;
+    // if(isFixed) {
+    //   parentBottom  -= el.offsetHeight;
+    // }
+    if(isCustom) {
+      parentBottom = parent.offsetTop + parent.scrollHeight
+    }
+    if(isNotWin && !isCustom) {
+      parentBottom = parent.offsetTop + parent.scrollHeight
+    }
+    // it.offset = scrollElOffset + p.stickyBitStickyOffset;
+    it.offset = p.stickyBitStickyOffset;
     it.stickyStart = isTop ? stickyStart - it.offset : 0;
+    // it.stickyChange = it.stickyStart + stickyChangeOffset;
     it.stickyChange = it.stickyStart + stickyChangeOffset;
+    
     it.stickyStop = isTop
       ? parentBottom - (el.offsetHeight + it.offset)
       : parentBottom - window.innerHeight;
@@ -250,6 +305,7 @@ class Stickybits {
     a = added class
   */
   toggleClasses(el, r, a) {
+    console.log(r, a)
     const e = el;
     const cArray = e.className.split(' ');
     if (a && cArray.indexOf(a) === -1) cArray.push(a);
@@ -310,9 +366,11 @@ class Stickybits {
     */
     const tC = this.toggleClasses;
     const scroll = this.isWin ? (window.scrollY || window.pageYOffset) : se.scrollTop;
+    console.log('scroll: ', scroll, 'start: ', start, 'stop: ', stop)
     const notSticky = scroll > start && scroll < stop && (state === 'default' || state === 'stuck');
     const isSticky = isTop && scroll <= start && (state === 'sticky' || state === 'stuck');
     const isStuck = scroll >= stop && state === 'sticky';
+    console.log('notSticky: ', notSticky, 'isSticky: ', isSticky, 'isStuck: ', isStuck)
     /*
       Unnamed arrow functions within this block
       ---
@@ -323,24 +381,53 @@ class Stickybits {
     if (notSticky) {
       it.state = 'sticky';
       rAF(() => {
+        if (pv === 'fixed') {
+          // debugger
+          if(item.temp) {
+            item.temp.style.display = 'block';
+          }
+          // stl[vp] = `${p.stickyBitStickyOffset + this.getTopPosition(p.scrollEl)}px`;
+          // oxw: 脱离文档流后要重新计算
+          // this.update();
+        } 
         tC(e, stuck, sticky);
         stl.position = pv;
         if (ns) return;
         stl.bottom = '';
         stl[vp] = `${p.stickyBitStickyOffset}px`;
+        if (pv === 'fixed') {
+          // debugger
+          // if(!item.temp) {
+          //   let temp = document.createElement('div');
+          //   item.temp = temp;
+          //   temp.style.height = `${it.el.offsetHeight}px`;
+          //   // it.el.parentNode.insertBefore(temp,it.el);
+          //   insertAfter(temp,it.el)
+          // }
+          stl[vp] = `${p.stickyBitStickyOffset + this.getTopPosition(p.scrollEl)}px`;
+          // oxw: 脱离文档流后要重新计算
+          // this.update();
+        } 
+        
       });
     } else if (isSticky) {
       it.state = 'default';
       rAF(() => {
         tC(e, sticky);
         tC(e, stuck);
-        if (pv === 'fixed') stl.position = '';
+        if (pv === 'fixed') {
+          stl.position = '';
+          if(item.temp) {
+            item.temp.style.display = 'none';
+          }
+        } 
       });
     } else if (isStuck) {
       it.state = 'stuck';
       rAF(() => {
         tC(e, sticky, stuck);
         if (pv !== 'fixed' || ns) return;
+        // oxw: 如果position是fixde，要加绝对定位，才能固定在父级元素的底部
         stl.top = '';
         stl.bottom = '0';
         stl.position = 'absolute';
