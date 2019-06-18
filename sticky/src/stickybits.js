@@ -251,13 +251,15 @@ class Stickybits {
     const isNotWin = !this.isWin;
     const isTop = p.verticalPosition !== 'bottom';
     const scrollElOffset = isCustom ? this.getTopPosition(p.scrollEl) : 0;
-    let stickyStart;
-    if(isNotWin) {
-      stickyStart = it.el.offsetTop
-    } else {
+    let stickyStart = 0;
+    if(isCustom) {
+      // stickyStart = it.el.offsetTop
+      stickyStart = scrollElOffset
+    } 
+    if(!isNotWin) {
       stickyStart = this.getTopPosition(parent)
     }
-    if(isNotWin && !isCustom) {
+    if(isNotWin) {
       stickyStart += parent.offsetTop
     }
     console.log(it.el.offsetTop, parent.offsetTop, stickyStart)
@@ -281,7 +283,7 @@ class Stickybits {
     //   parentBottom  -= el.offsetHeight;
     // }
     if(isCustom) {
-      parentBottom = parent.offsetTop + parent.scrollHeight
+      parentBottom = this.getTopPosition(p.scrollEl) + parent.offsetTop + parent.scrollHeight
     }
     if(isNotWin && !isCustom) {
       parentBottom = parent.offsetTop + parent.scrollHeight

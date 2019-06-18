@@ -4,24 +4,28 @@
       占位区域
     </div>
     <div class="sticky-wrapper" ref="stickyWrapper">
-      <div class="parent">
+      <div>
         <div style="height: 140px; background: purple"></div>
-        <div class="sticky-bar" ref="bar">bar1</div>
-        <div class="content">
-          <p>asd</p>
-          <p>asdasdasd</p>
-          <p>asdasdasdasdasd</p>
+        <div class="parent">
+          <div class="sticky-bar" ref="bar">bar1</div>
+          <div class="content">
+            <p>asd</p>
+            <p>asdasdasd</p>
+            <p>asdasdasdasdasd</p>
+          </div>
         </div>
       </div>
-      <!-- <div class="parent">
+      <div >
         <div style="height: 40px; background: purple"></div>
-        <div class="sticky-bar" ref="bar">bar2</div>
-        <div class="content">
-          asd
-          asdasdasd
-          asdasdasdasdasd
+        <div class="parent">
+          <div class="sticky-bar" ref="bar">bar2</div>
+          <div class="content">
+            asd
+            asdasdasd
+            asdasdasdasdasd
+          </div>
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -39,7 +43,7 @@ export default {
         scrollEl: this.$refs.stickyWrapper,
         stickyBitStickyOffset: 0,
         // noStyles: true,
-        // useFixed: true,
+        useFixed: true,
       });
   }
 }
