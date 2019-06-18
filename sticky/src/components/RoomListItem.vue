@@ -58,7 +58,7 @@ export default {
           this.stickybits = stickybits(this.$refs.roomInfo, {
             useStickyClasses: true,
             stickyBitStickyOffset: this.$parent.$refs.navbar.offsetHeight,
-            // useFixed: true,
+            useFixed: true,
           });
         }
       })

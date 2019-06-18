@@ -255,9 +255,9 @@ class Stickybits {
     if(isNotWin) {
       stickyStart = it.el.offsetTop
     } else {
-      stickyStart = this.getTopPosition(el)
+      stickyStart = this.getTopPosition(parent)
     }
-    if(isNotWin) {
+    if(isNotWin && !isCustom) {
       stickyStart += parent.offsetTop
     }
     console.log(it.el.offsetTop, parent.offsetTop, stickyStart)
@@ -286,8 +286,8 @@ class Stickybits {
     if(isNotWin && !isCustom) {
       parentBottom = parent.offsetTop + parent.scrollHeight
     }
-    // it.offset = scrollElOffset + p.stickyBitStickyOffset;
-    it.offset = p.stickyBitStickyOffset;
+    it.offset = scrollElOffset + p.stickyBitStickyOffset;
+    // it.offset = p.stickyBitStickyOffset;
     it.stickyStart = isTop ? stickyStart - it.offset : 0;
     // it.stickyChange = it.stickyStart + stickyChangeOffset;
     it.stickyChange = it.stickyStart + stickyChangeOffset;
@@ -305,7 +305,7 @@ class Stickybits {
     a = added class
   */
   toggleClasses(el, r, a) {
-    console.log(r, a)
+    // console.log(r, a)
     const e = el;
     const cArray = e.className.split(' ');
     if (a && cArray.indexOf(a) === -1) cArray.push(a);
@@ -323,6 +323,7 @@ class Stickybits {
       - stuck
   */
   manageState(item) {
+    this.computeScrollOffsets(item);
     // cache object
     const it = item;
     const e = it.el;
@@ -366,11 +367,11 @@ class Stickybits {
     */
     const tC = this.toggleClasses;
     const scroll = this.isWin ? (window.scrollY || window.pageYOffset) : se.scrollTop;
-    console.log('scroll: ', scroll, 'start: ', start, 'stop: ', stop)
+    // console.log('scroll: ', scroll, 'start: ', start, 'stop: ', stop)
     const notSticky = scroll > start && scroll < stop && (state === 'default' || state === 'stuck');
     const isSticky = isTop && scroll <= start && (state === 'sticky' || state === 'stuck');
     const isStuck = scroll >= stop && state === 'sticky';
-    console.log('notSticky: ', notSticky, 'isSticky: ', isSticky, 'isStuck: ', isStuck)
+    // console.log('notSticky: ', notSticky, 'isSticky: ', isSticky, 'isStuck: ', isStuck)
     /*
       Unnamed arrow functions within this block
       ---
@@ -484,6 +485,7 @@ class Stickybits {
       const instance = this.instances[i];
       if (instance.stateContainer) {
         instance.props.scrollEl.removeEventListener('scroll', instance.stateContainer);
+        instance.temp && instance.temp.parentElement.removeChild(instance.temp)
       }
       this.removeInstance(instance);
     }

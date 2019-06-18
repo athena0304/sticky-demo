@@ -12,6 +12,9 @@
         <li>
           <router-link to="/windowFixed">基于window的fixed</router-link>
         </li>
+        <li>
+          <router-link to="/update">update</router-link>
+        </li>
       </ul>
     </div>
   </div>

@@ -2,11 +2,13 @@
   <div class="about">
     <div class="top-box">
       占位区域
+      <div>
+        <button @click="add">增加节点</button>
+      </div>
     </div>
     <div>
-      <div style="height: 40px; background: purple"></div>
+      <div v-for="item in arr" :key="item" style="height: 40px; background: purple">{{item}}</div>
       <div>
-
         <div class="sticky-bar" ref="bar">bar</div>
         <div class="content">
           <p>asd</p>
@@ -23,7 +25,8 @@ import stickybits from '../stickybits';
 export default {
   data() {
     return {
-      stickybits:null
+      stickybits:null,
+      arr: [0, 1]
     }
   },
   mounted () {
@@ -33,6 +36,12 @@ export default {
         // noStyles: true,
         useFixed: true,
       });
+  },
+  methods: {
+    add() {
+      const {arr} = this
+      this.arr.push(arr[arr.length - 1] + 1)
+    }
   }
 }
 </script>
